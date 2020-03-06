@@ -1,0 +1,68 @@
+﻿/*pushUser*/
+QPushButton#button_userRegion{
+        background-image: url(:/img/userRegion);
+	border: 0px;
+}
+QPushButton#button_userRegion:hover{
+        background-image: url(:/img/userRegion1);
+	border: 0px;
+}
+QPushButton#button_userRegion:checked{
+        background-image: url(:/img/userRegion1);
+	border: 0px;
+}
+/*pushUser*/
+QPushButton#button_topStat{
+        background-image: url(:/img/topStat);
+	border: 0px;
+}
+QPushButton#button_topStat:hover{
+        background-image: url(:/img/topStat1);
+	border: 0px;
+}
+QPushButton#button_topStat:checked{
+        background-image: url(:/img/topStat1);
+	border: 0px;
+}
+
+/*pushGet*/
+QPushButton#button_getData{
+        background-image: url(:/img/getData);
+        border: 1px;
+}
+QPushButton#button_getData:hover{
+        background-image: url(:/img/getData1);
+        border: 1px;
+}
+QPushButton#button_getData:checked{
+        background-image: url(:/img/getData1);
+        border: 1px;
+}
+
+/*pushUp*/
+QPushButton#button_upData{
+        background-image: url(:/img/upData);
+	border: 0px;
+}
+QPushButton#button_upData:hover{
+        background-image: url(:/img/upData1);
+	border: 0px;
+}
+QPushButton#button_upData:checked{
+        background-image: url(:/img/upData1);
+	border: 0px;
+}
+
+/*pushSelect*/
+QPushButton#button_scanQuery{
+        background-image: url(:/img/qurey);
+	border: 0px;
+}
+QPushButton#button_scanQuery:hover{
+        background-image: url(:/img/qurey1);
+	border: 0px;
+}
+QPushButton#button_scanQuery:checked{
+        background-image: url(:/img/qurey1);
+	border: 0px;
+}

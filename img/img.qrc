@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/img">
+        <file alias="style">img/style.qss</file>
+        <file alias="loading">img/loading.gif</file>
+        <file alias="icon">img/icon.ico</file>
+    </qresource>
+</RCC>
