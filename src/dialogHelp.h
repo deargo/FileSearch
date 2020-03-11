@@ -16,7 +16,8 @@ class DialogHelp : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogHelp(bool bAbout, QWidget *parent = nullptr);
+    enum class Type{ ABOUT,USAGE};
+    explicit DialogHelp(QWidget *parent, Type type);
     ~DialogHelp();
 
 private:

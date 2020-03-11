@@ -2,7 +2,6 @@
 #include "ui_searchWindow.h"
 #include <windows.h>
 #include "msgBox.hpp"
-#include "dialogDelete.h"
 #include "searchConst.hpp"
 #include "dialogHelp.h"
 
@@ -15,6 +14,7 @@
 #include <QList>
 #include <QtAlgorithms>
 #include <QProcess>
+#include <QClipboard >
 
 SearchWindow::SearchWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,6 +32,7 @@ SearchWindow::SearchWindow(QWidget *parent) :
     pDialogWait = new DialogWait("img/loading.gif",this);
 
     initSignal();
+    initTabMenu();
     showProperty(false);
     searchReset("",false);
 }
@@ -100,11 +101,37 @@ void SearchWindow::initSignal()
     QObject::connect(this->ui->action_search_export,&QAction::triggered,this,&SearchWindow::recvBtnSearchExport);
     QObject::connect(this->ui->action_search_delete,&QAction::triggered,this,&SearchWindow::recvBtnSearchDelete);
     //帮助菜单
-    QObject::connect(this->ui->action_help_about,&QAction::triggered,[&](){ DialogHelp dialogHelp(true); dialogHelp.exec();});
-    QObject::connect(this->ui->action_help_usage,&QAction::triggered,[&](){ DialogHelp dialogHelp(false); dialogHelp.exec();});
+    QObject::connect(this->ui->action_help_about,&QAction::triggered,[&](){ DialogHelp dialogHelp(this,DialogHelp::Type::ABOUT); dialogHelp.exec();});
+    QObject::connect(this->ui->action_help_usage,&QAction::triggered,[&](){ DialogHelp dialogHelp(this,DialogHelp::Type::USAGE); dialogHelp.exec();});
     return;
 }
 
+void SearchWindow::initTabMenu()
+{
+    tab_menu = new QMenu(this->ui->tableWidget);
+    tab_menu_copy_path         =new QAction("拷贝路径", this);
+    tab_menu_file_info         =new QAction("文件信息", this);
+    tab_menu_open_dir          =new QAction("打开所在目录", this);
+    tab_menu_delete_onlytable  =new QAction("仅从列表移除", this);
+    tab_menu_delete_recyclebin =new QAction("删除到回收站", this);
+    tab_menu_delete_absolutely =new QAction("彻底删除文件", this);
+    tab_menu->addAction(tab_menu_copy_path);
+    tab_menu->addAction(tab_menu_file_info);
+    tab_menu->addAction(tab_menu_open_dir);
+    tab_menu->addAction(tab_menu_delete_absolutely);
+    tab_menu->addAction(tab_menu_delete_onlytable);
+    tab_menu->addAction(tab_menu_delete_recyclebin);
+    //接受菜单信号
+    this->ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(this->ui->tableWidget, &QTableWidget::customContextMenuRequested, this, &SearchWindow::recvTabRightClickedMenu);
+    QObject::connect(tab_menu_copy_path,&QAction::triggered,this,&SearchWindow::recvTabRightClickedMenu_copy_path);
+    QObject::connect(tab_menu_file_info,&QAction::triggered,this,&SearchWindow::recvTabRightClickedMenu_file_info);
+    QObject::connect(tab_menu_open_dir,&QAction::triggered,this,&SearchWindow::recvTabRightClickedMenu_open_dir);
+    QObject::connect(tab_menu_delete_onlytable,&QAction::triggered,this,&SearchWindow::recvTabRightClickedMenu_delete_onlytable);
+    QObject::connect(tab_menu_delete_recyclebin,&QAction::triggered,this,&SearchWindow::recvTabRightClickedMenu_delete_recyclebin);
+    QObject::connect(tab_menu_delete_absolutely,&QAction::triggered,this,&SearchWindow::recvTabRightClickedMenu_delete_absolutely);
+    return;
+}
 bool SearchWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == this->ui->lineEdit_search_target && event->type()==QEvent::KeyPress)
@@ -506,6 +533,7 @@ void SearchWindow::showResult(const SearchImpl::CResultVec &resultVec, bool sear
 
         //路径
         temp = searchResult.fileInfo.filePath();
+        temp.replace("/","\\");
         strItem = new QTableWidgetItem(temp);
         strItem->setToolTip(temp);
         this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::PATH,strItem);
@@ -625,20 +653,103 @@ void SearchWindow::recvBtnSearchDelete()
     }
 
     //从后往前删除
-    QString filepath;
     for(auto it = selectRows.rbegin();it!=selectRows.rend();++it)
     {
-        int row = *it;
-        filepath = this->ui->tableWidget->item(row,SearchConst::Col::Idx::PATH)->text();
-        if(DialogDelete::Choise::absolutely == choise )
-        {
-            QFile::remove(filepath);
-        } else if(DialogDelete::Choise::recyclebin == choise )
-        {
-            SearchWindow::RrecycleFile(filepath);
-        }
-        this->ui->tableWidget->removeRow(row);
+        tabFileDelete(*it,choise);
     }
+    return;
+}
+
+void SearchWindow::recvTabRightClickedMenu_copy_path()
+{
+    int currentRow = this->ui->tableWidget->currentRow();
+    QString filePath = this->ui->tableWidget->item(currentRow,SearchConst::Col::Idx::PATH)->text();
+    filePath.replace("/","\\");
+    //获取系统剪贴板指针
+    QClipboard *clipboard = QApplication::clipboard();
+    //设置剪贴板内容
+    clipboard->setText(filePath);
+}
+
+void SearchWindow::recvTabRightClickedMenu_file_info()
+{    
+    int currentRow = this->ui->tableWidget->currentRow();
+    QString filePath = this->ui->tableWidget->item(currentRow,SearchConst::Col::Idx::PATH)->text();
+    filePath.replace("/","\\");
+    std::wstring wlpstr = filePath.toStdWString();
+    LPCWSTR lpcwStr = wlpstr.c_str();
+    SHELLEXECUTEINFO ShExecInfo = {0};
+    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShExecInfo.fMask = SEE_MASK_INVOKEIDLIST ;
+    ShExecInfo.lpVerb = L"properties";
+    ShExecInfo.lpFile = lpcwStr;
+    ShExecInfo.lpParameters = L"";
+    ShExecInfo.lpDirectory = NULL;
+    ShExecInfo.nShow = SW_SHOW;
+    ShExecInfo.hInstApp = NULL;
+    ShellExecuteEx(&ShExecInfo);
+    return;
+}
+
+void SearchWindow::recvTabRightClickedMenu_open_dir()
+{
+    int currentRow = this->ui->tableWidget->currentRow();
+    QString filePath = this->ui->tableWidget->item(currentRow,SearchConst::Col::Idx::PATH)->text();
+    filePath.replace("/","\\");
+
+    QProcess process;
+    //打开文件夹，并选择文件
+    process.startDetached(QString("explorer.exe /select,\"%1\"").arg(filePath));
+    return;
+}
+
+void SearchWindow::recvTabRightClickedMenu_delete_onlytable()
+{
+    int currentRow = this->ui->tableWidget->currentRow();
+    QString filePath = this->ui->tableWidget->item(currentRow,SearchConst::Col::Idx::PATH)->text();
+    bool isReset = MSG_BOX_askRtnTrue("删除提示","确定移除展示列表？"+filePath);
+    if(isReset)
+    {
+        tabFileDelete(currentRow,DialogDelete::Choise::onlytable);
+    }
+    return;
+}
+
+void SearchWindow::recvTabRightClickedMenu_delete_recyclebin()
+{
+    int currentRow = this->ui->tableWidget->currentRow();
+    QString filePath = this->ui->tableWidget->item(currentRow,SearchConst::Col::Idx::PATH)->text();
+    bool isReset = MSG_BOX_askRtnTrue("删除提示","确定删除到回收站？"+filePath);
+    if(isReset)
+    {
+        tabFileDelete(currentRow,DialogDelete::Choise::recyclebin);
+    }
+    return;
+}
+
+void SearchWindow::recvTabRightClickedMenu_delete_absolutely()
+{
+    int currentRow = this->ui->tableWidget->currentRow();
+    QString filePath = this->ui->tableWidget->item(currentRow,SearchConst::Col::Idx::PATH)->text();
+    bool isReset = MSG_BOX_askRtnTrue("删除提示","确定彻底删除文件？"+filePath);
+    if(isReset)
+    {
+        tabFileDelete(currentRow,DialogDelete::Choise::absolutely);
+    }
+    return;
+}
+
+void SearchWindow::tabFileDelete(int row, DialogDelete::Choise choise)
+{
+    QString filePath = this->ui->tableWidget->item(row,SearchConst::Col::Idx::PATH)->text();
+    if(DialogDelete::Choise::absolutely == choise )
+    {
+        QFile::remove(filePath);
+    } else if(DialogDelete::Choise::recyclebin == choise )
+    {
+        SearchWindow::RrecycleFile(filePath);
+    }
+    this->ui->tableWidget->removeRow(row);
     return;
 }
 

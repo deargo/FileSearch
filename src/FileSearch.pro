@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = FileSearch
 TEMPLATE = app
+DESTDIR  = ../bin
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
@@ -46,6 +47,5 @@ CONFIG(debug, debug|release): BUILD_OUT_DIR="$$OUT_PWD/debug"
 CONFIG(release, debug|release):BUILD_OUT_DIR+="$$OUT_PWD/release"
 message(BUILD_OUT_DIR: $$BUILD_OUT_DIR)
 
-QMAKE_POST_LINK += xcopy /Y /C "\"$$PWD/../img"\" "\"$$BUILD_OUT_DIR/img\\"\"
-#QMAKE_POST_LINK += xcopy /Y /C "\"$$BUILD_OUT_DIR/$${TARGET}.exe"\" "\"$$PWD/../bin"\"
+QMAKE_POST_LINK += xcopy /Y /C "\"$$PWD/../img"\" "\"$$OUT_PWD/../bin/img\\"\"
 
