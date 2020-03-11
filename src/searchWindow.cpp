@@ -4,6 +4,7 @@
 #include "msgBox.hpp"
 #include "dialogDelete.h"
 #include "searchConst.hpp"
+#include "dialogHelp.h"
 
 #include <QFont>
 #include <QKeyEvent>
@@ -24,6 +25,8 @@ SearchWindow::SearchWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(QApplication::applicationDirPath()+"/img/icon.png"));
     this->setWindowTitle("文件搜索工具");
 
+    //禁止缩放
+    this->setFixedSize(this->width(),this->height());
     //监控enter按钮事件
     this->ui->lineEdit_search_target->installEventFilter(this);
 
@@ -94,7 +97,10 @@ void SearchWindow::initSignal()
     QObject::connect(this->ui->action_search_reset,&QAction::triggered,this,&SearchWindow::recvBtnSearchReset);
     QObject::connect(this->ui->action_search_export,&QAction::triggered,this,&SearchWindow::recvBtnSearchExport);
     QObject::connect(this->ui->action_search_delete,&QAction::triggered,this,&SearchWindow::recvBtnSearchDelete);
-
+    //帮助菜单
+    QObject::connect(this->ui->action_help_about,&QAction::triggered,[&](){ DialogHelp dialogHelp(true); dialogHelp.exec();});
+    QObject::connect(this->ui->action_help_usage,&QAction::triggered,[&](){ DialogHelp dialogHelp(false); dialogHelp.exec();});
+    return;
 }
 
 bool SearchWindow::eventFilter(QObject *watched, QEvent *event)
@@ -415,7 +421,7 @@ void SearchWindow::showProperty(bool searchContent)
     //最后一列不留空
     this->ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
     //默认均分列宽
-    //this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     //表头加粗
     QFont font = this->ui->tableWidget->horizontalHeader()->font();
     font.setBold(true);
@@ -437,10 +443,12 @@ void SearchWindow::showResult(const SearchImpl::CResultVec &resultVec, bool sear
 {
     if(resultVec.empty())
     {
+        //为空则平分各列
         this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         return;
     }
-    this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    //有数据则可拉动各列宽度
+    this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     QString temp;
     QTableWidgetItem *strItem = nullptr;
     int rows = resultVec.size();
@@ -459,7 +467,7 @@ void SearchWindow::showResult(const SearchImpl::CResultVec &resultVec, bool sear
         strItem->setToolTip(temp);
         this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::INDEX,strItem);
         //类型
-        temp = SearchImpl::CResult::GetFileType(temp);
+        temp = SearchImpl::CFileType::Name(searchResult.fileInfo);
         strItem = new QTableWidgetItem(temp);
         strItem->setToolTip(temp);
         this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::TYPE,strItem);
@@ -482,7 +490,6 @@ void SearchWindow::showResult(const SearchImpl::CResultVec &resultVec, bool sear
         temp = searchResult.fileInfo.filePath();
         strItem = new QTableWidgetItem(temp);
         strItem->setToolTip(temp);
-        //strItem->setTextAlignment(Qt::AlignCenter);
         this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::PATH,strItem);
     }
     return;
@@ -564,17 +571,17 @@ void SearchWindow::recvBtnSearchDelete()
 {
     if(this->ui->tableWidget->rowCount()==0)
     {
-        MSG_BOX_warn("表数据为空");
+        //MSG_BOX_warn("表数据为空");
         return;
     }
-    if( this->ui->tableWidget->selectedRanges().empty())
+    //不使用selectedRanges，见博客：https://blog.csdn.net/aguoxin/article/details/104700809
+    QList<QTableWidgetItem*> selectItems = this->ui->tableWidget->selectedItems();
+    if( selectItems.empty())
     {
         MSG_BOX_warn("所选目标为空");
         return;
     }
 
-    //不使用selectedRanges，因为Ctrl+A，和Shift按钮选中的，不没有选中
-    QList<QTableWidgetItem*> selectItems = this->ui->tableWidget->selectedItems();
     QSet<int> selectRows;
     for(const auto& item: selectItems)
     {

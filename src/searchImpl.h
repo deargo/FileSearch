@@ -119,16 +119,28 @@ public:
     {
     public:
         typedef QList<int> LineInfo;
-        enum class FileType {UNKNOW=0,DIR,LINK,TEXT,XML,WORD,IMAGE,AUDIO,VIDEO,BINARY};
-
         LineInfo lineInfo;
         QFileInfo fileInfo;
         CResult(){}
         CResult(const QFileInfo& fileInfo):fileInfo(fileInfo){}
         static QString ToString(const LineInfo &lineInfo, const QString &split);
-        static QString GetFileType(FileType fileType);
-        static FileType GetFileType(const QFileInfo& fileinfo);
-        static QString GetFileType(const QString& filepath);
     };
     typedef QVector<CResult> CResultVec;
+
+public:
+    class CFileType
+    {
+    public:
+        enum class Data {UNKNOW=0,DIR,LINK,TEXT,XML,WORD,IMAGE,AUDIO,VIDEO,BINARY};
+        static QString Name(Data data) {return CFileType::Type(data); }
+        static QString Name(const QString& filePath){ return CFileType::Name(CFileType::Type(std::move(QFileInfo(filePath))));}
+        static QString Name(const QFileInfo& fileInfo){ return CFileType::Name(CFileType::Type(fileInfo));}
+
+        static QString Mime(const QString& filePath){ return CFileType::Mime(std::move(QFileInfo(filePath)));}
+        static QString Mime(const QFileInfo& fileInfo);
+
+        static QString Type(Data data);
+        static Data Type(const QString& filePath){ return CFileType::Type(std::move(QFileInfo(filePath)));}
+        static Data Type(const QFileInfo& fileInfo);
+    };
 };

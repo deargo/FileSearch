@@ -187,8 +187,7 @@ bool SearchImpl::CCondition::FileInclude::matched(const QString &subject,const Q
         QRegularExpression regularExpression(pattern,casesensitive
                                              ? QRegularExpression::NoPatternOption
                                              : QRegularExpression::CaseInsensitiveOption);
-        return  regularExpression.match(subject,0,
-                                        QRegularExpression::PartialPreferFirstMatch).hasMatch();
+        return  regularExpression.match(subject).hasMatch();
     }
     return subject.contains(pattern,casesensitive? Qt::CaseSensitive : Qt::CaseInsensitive);
 }
@@ -228,8 +227,7 @@ bool SearchImpl::CCondition::FileExclude::matched(const QString &subject,const Q
         QRegularExpression regularExpression(pattern,casesensitive
                                              ? QRegularExpression::NoPatternOption
                                              : QRegularExpression::CaseInsensitiveOption);
-        return false == regularExpression.match(subject,0,
-                                                QRegularExpression::PartialPreferFirstMatch).hasMatch();
+        return false == regularExpression.match(subject).hasMatch();
     }
     return false == subject.contains(pattern,casesensitive? Qt::CaseSensitive : Qt::CaseInsensitive);
 }
@@ -251,11 +249,19 @@ bool SearchImpl::CCondition::ContentInclude::matched(const QString &filePath, QL
         //条件为空，也返回true
         return true;
     }
+
+    SearchImpl::CFileType::Data fileType = SearchImpl::CFileType::Type(filePath);
+    if(SearchImpl::CFileType::Data::TEXT != fileType)
+    {
+        return false;
+    }
+
     QFile targetFile(filePath);
     if (!targetFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;
     }
+
     QTextStream textStream(&targetFile);
     textStream.setCodec("GB2312");
 
@@ -291,8 +297,7 @@ bool SearchImpl::CCondition::ContentInclude::matched(const QString &subject,cons
         QRegularExpression regularExpression(pattern,casesensitive
                                              ? QRegularExpression::NoPatternOption
                                              : QRegularExpression::CaseInsensitiveOption);
-        return  regularExpression.match(subject,0,
-                                        QRegularExpression::PartialPreferFirstMatch).hasMatch();
+        return  regularExpression.match(subject).hasMatch();
     }
     return subject.contains(pattern,casesensitive? Qt::CaseSensitive : Qt::CaseInsensitive);
 }
@@ -358,56 +363,71 @@ QString SearchImpl::CResult::ToString(const LineInfo& lineInfo, const QString& s
     return value;
 }
 
-QString SearchImpl::CResult::GetFileType(SearchImpl::CResult::FileType fileType)
-{
-    //UNKNOW,DIR,LINK,TEXT,XML,WORD,IMAGE,AUDIO,VIDEO,BINARY
-    static QString fileTypes[]={"未知","目录","链接","文本","XML","文档","图片","音频","视频","二进制"};
-    return fileTypes[static_cast<int>(fileType)];
-}
 
-SearchImpl::CResult::FileType SearchImpl::CResult::GetFileType(const QFileInfo &fileinfo)
+QString SearchImpl::CFileType::Mime(const QFileInfo& fileInfo)
 {
     static QMimeDatabase db;
-    if(fileinfo.isDir()) return SearchImpl::CResult::FileType::DIR;
-    if(fileinfo.isSymLink()) return SearchImpl::CResult::FileType::LINK;
-    QMimeType mime = db.mimeTypeForFile(fileinfo);
-    if(mime.name().startsWith("text/plain")) return SearchImpl::CResult::FileType::TEXT;
-    if(mime.name().startsWith("text/htm")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("text/html")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("text/xhtml")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("text/xml")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("text/")) return SearchImpl::CResult::FileType::TEXT;
-    if(mime.name().startsWith("image/")) return SearchImpl::CResult::FileType::IMAGE;
-    if(mime.name().startsWith("audio/")) return SearchImpl::CResult::FileType::AUDIO;
-    if(mime.name().startsWith("video/")) return SearchImpl::CResult::FileType::VIDEO;
-    if(mime.name().startsWith("application/octet-stream")) return SearchImpl::CResult::FileType::BINARY;
-    if(mime.name().startsWith("application/xml")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("application/xhtml")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("application/xhtml+xml")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("application/atom+xml")) return SearchImpl::CResult::FileType::XML;
-    if(mime.name().startsWith("application/json")) return SearchImpl::CResult::FileType::TEXT;
-    if(mime.name().startsWith("application/msword")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/pdf")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/x-jpg")) return SearchImpl::CResult::FileType::IMAGE;
-    if(mime.name().startsWith("application/x-jpeg")) return SearchImpl::CResult::FileType::IMAGE;
-    if(mime.name().startsWith("application/x-img")) return SearchImpl::CResult::FileType::IMAGE;
-    if(mime.name().startsWith("application/x-png")) return SearchImpl::CResult::FileType::IMAGE;
-    if(mime.name().startsWith("application/x-ppt")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/x-vnd.msg-powerpoint")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/x-vnd.msg-excel")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/x-xls")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/x-vnd.visio")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/x-vsd")) return SearchImpl::CResult::FileType::WORD;
-    if(mime.name().startsWith("application/x-visio")) return SearchImpl::CResult::FileType::WORD;
-    if(fileinfo.isExecutable()) return SearchImpl::CResult::FileType::BINARY;
-    return SearchImpl::CResult::FileType::UNKNOW;
+    QMimeType mime = db.mimeTypeForFile(fileInfo);
+    return mime.name();
+}
+QString SearchImpl::CFileType::Type(SearchImpl::CFileType::Data data)
+{
+    static QMap<SearchImpl::CFileType::Data,QString> fileTypeMap =
+    {
+        {SearchImpl::CFileType::Data::UNKNOW,"未知"},
+        {SearchImpl::CFileType::Data::DIR,"目录"},
+        {SearchImpl::CFileType::Data::LINK,"链接"},
+        {SearchImpl::CFileType::Data::TEXT,"文本"},
+        {SearchImpl::CFileType::Data::XML,"XML"},
+        {SearchImpl::CFileType::Data::WORD,"文档"},
+        {SearchImpl::CFileType::Data::IMAGE,"图片"},
+        {SearchImpl::CFileType::Data::AUDIO,"音频"},
+        {SearchImpl::CFileType::Data::VIDEO,"视频"},
+        {SearchImpl::CFileType::Data::BINARY,"二进制"}
+    };
+    return fileTypeMap.contains(data) ? fileTypeMap.value(data): "未知";
+}
+SearchImpl::CFileType::Data SearchImpl::CFileType::Type(const QFileInfo& fileInfo)
+{
+    if(fileInfo.absoluteFilePath()=="D:/myProj/FileSearch/build/ui_dialogDelete.h")
+    {
+        int aa;
+        aa=1;
+    }
+    if(fileInfo.isDir()) return SearchImpl::CFileType::Data::DIR;
+    if(fileInfo.isSymLink()) return SearchImpl::CFileType::Data::LINK;
+    QString mime = SearchImpl::CFileType::Mime(fileInfo);
+    if(mime.startsWith("text/plain")) return SearchImpl::CFileType::Data::TEXT;
+    if(mime.startsWith("text/htm")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("text/html")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("text/xhtml")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("text/xml")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("text/")) return SearchImpl::CFileType::Data::TEXT;
+    if(mime.startsWith("image/")) return SearchImpl::CFileType::Data::IMAGE;
+    if(mime.startsWith("audio/")) return SearchImpl::CFileType::Data::AUDIO;
+    if(mime.startsWith("video/")) return SearchImpl::CFileType::Data::VIDEO;
+    if(mime.startsWith("application/octet-stream")) return SearchImpl::CFileType::Data::BINARY;
+    if(mime.startsWith("application/xml")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("application/xhtml")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("application/xhtml+xml")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("application/atom+xml")) return SearchImpl::CFileType::Data::XML;
+    if(mime.startsWith("application/json")) return SearchImpl::CFileType::Data::TEXT;
+    if(mime.startsWith("application/msword")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/pdf")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-jpg")) return SearchImpl::CFileType::Data::IMAGE;
+    if(mime.startsWith("application/x-jpeg")) return SearchImpl::CFileType::Data::IMAGE;
+    if(mime.startsWith("application/x-img")) return SearchImpl::CFileType::Data::IMAGE;
+    if(mime.startsWith("application/x-png")) return SearchImpl::CFileType::Data::IMAGE;
+    if(mime.startsWith("application/x-ppt")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-vnd.msg-powerpoint")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-vnd.msg-excel")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-xls")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-vnd.visio")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-vsd")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-visio")) return SearchImpl::CFileType::Data::WORD;
+    if(fileInfo.isExecutable()) return SearchImpl::CFileType::Data::BINARY;
+    return SearchImpl::CFileType::Data::UNKNOW;
 }
 
-QString SearchImpl::CResult::GetFileType(const QString& filepath)
-{
-    QFileInfo fileInfo(filepath);
-    SearchImpl::CResult::FileType fileType = SearchImpl::CResult::GetFileType(fileInfo);
-    return SearchImpl::CResult::GetFileType(fileType);
-}
 
 

@@ -379,7 +379,7 @@
      <x>0</x>
      <y>0</y>
      <width>821</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -410,9 +410,8 @@
     <property name="title">
      <string>帮助</string>
     </property>
-    <addaction name="action_help_version"/>
+    <addaction name="action_help_about"/>
     <addaction name="action_help_usage"/>
-    <addaction name="action_help_author"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_view"/>
@@ -474,9 +473,9 @@
     <string>使用帮助</string>
    </property>
   </action>
-  <action name="action_help_version">
+  <action name="action_help_about">
    <property name="text">
-    <string>版本信息</string>
+    <string>关于工具</string>
    </property>
   </action>
  </widget>

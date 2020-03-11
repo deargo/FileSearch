@@ -23,12 +23,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp\
+    dialogHelp.cpp \
         searchWindow.cpp \
     dialogWait.cpp \
     dialogDelete.cpp \
     searchImpl.cpp
 
 HEADERS  += searchWindow.h \
+    dialogHelp.h \
     dialogWait.h \
     msgBox.hpp \
     dialogDelete.h \
@@ -36,7 +38,8 @@ HEADERS  += searchWindow.h \
     searchImpl.h
 
 FORMS    += searchWindow.ui \
-    dialogDelete.ui
+    dialogDelete.ui \
+    dialogHelp.ui
 
 BUILD_OUT_DIR="$$OUT_PWD"
 CONFIG(debug, debug|release): BUILD_OUT_DIR="$$OUT_PWD/debug"
