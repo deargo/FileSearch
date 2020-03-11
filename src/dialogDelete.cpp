@@ -20,6 +20,8 @@ DialogDelete::DialogDelete(const QList<int> &selectRows, const QTableWidget *tab
                      [&](){this->choise = Choise::onlytable;this->close();});
     QObject::connect(this->ui->pushButton_delete_canceled,&QPushButton::clicked,this,
                      [&](){this->choise = Choise::canceled;this->close();});
+    //表头排序
+    QObject::connect(this->ui->tableWidget->horizontalHeader(),&QHeaderView::sectionClicked,this,&DialogDelete::recvSortTableInfo);
 }
 
 DialogDelete::~DialogDelete()
@@ -49,23 +51,49 @@ void DialogDelete::initTable(const QList<int> &selectRows, const QTableWidget* t
     //选择为整行
     this->ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-
+    //设置表格行数
     this->ui->tableWidget->setRowCount(selectRows.size());
-    int idx=selectRows.size()-1;
+    int desRow=selectRows.size()-1,srcRow=0;
     QString temp;
     QTableWidgetItem* strItem = nullptr;
     for(auto it=selectRows.rbegin();it!=selectRows.rend();++it)
     {
-        int row = *it;
-        //this->ui->tableWidget->insertRow(idx);
-        temp = tableWidget->item(row,SearchConst::Col::Idx::INDEX)->text();
-        this->ui->tableWidget->setItem(idx,0,new QTableWidgetItem(temp));
-
-        temp = tableWidget->item(row,SearchConst::Col::Idx::PATH)->text();
-        strItem = new QTableWidgetItem(temp);
+        srcRow = *it;
+        //设置显示为数字，方便排序
+        temp = tableWidget->item(srcRow,SearchConst::Col::Idx::INDEX)->text();
+        strItem = new QTableWidgetItem();
+        strItem->setData(Qt::DisplayRole,temp.toInt());
         strItem->setToolTip(temp);
-        this->ui->tableWidget->setItem(idx,1,strItem);
-        --idx;
+        this->ui->tableWidget->setItem(desRow,static_cast<int>(Col::INDEX),strItem);
+
+        temp = tableWidget->item(srcRow,SearchConst::Col::Idx::PATH)->text();
+        strItem = new QTableWidgetItem();
+        strItem->setData(Qt::DisplayRole,temp);
+        strItem->setToolTip(temp);
+        this->ui->tableWidget->setItem(desRow,static_cast<int>(Col::PATH),strItem);
+        --desRow;
+    }
+    return;
+}
+
+void DialogDelete::recvSortTableInfo(int colIndex)
+{
+    if(static_cast<int>(Col::INDEX) == colIndex)
+    {
+        //The items are sorted ascending e.g. starts with 'AAA' ends with 'ZZZ' in Latin-1 locales
+        static Qt::SortOrder lastSort = Qt::AscendingOrder;
+        this->ui->tableWidget->sortByColumn(colIndex,lastSort);
+        //升降排序奇偶次数交互
+        lastSort = (Qt::AscendingOrder==lastSort) ? Qt::DescendingOrder : Qt::AscendingOrder;
+        return;
+    }
+    if(static_cast<int>(Col::PATH) == colIndex)
+    {
+        //The items are sorted ascending e.g. starts with 'AAA' ends with 'ZZZ' in Latin-1 locales
+        static Qt::SortOrder lastSort = Qt::AscendingOrder;
+        this->ui->tableWidget->sortByColumn(colIndex,lastSort);
+        //升降排序奇偶次数交互
+        lastSort = (Qt::AscendingOrder==lastSort) ? Qt::DescendingOrder : Qt::AscendingOrder;
     }
     return;
 }

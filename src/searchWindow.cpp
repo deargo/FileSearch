@@ -16,7 +16,6 @@
 #include <QtAlgorithms>
 #include <QProcess>
 
-
 SearchWindow::SearchWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::SearchWindow)
@@ -84,6 +83,9 @@ void SearchWindow::initSignal()
     QObject::connect(this->ui->checkBox_content_include_regex,&QCheckBox::clicked,[&](bool isChecked){
         if(isChecked) this->ui->checkBox_content_include_whole_word->setCheckState(Qt::Unchecked);
     });
+    //表头排序
+    QObject::connect(this->ui->tableWidget->horizontalHeader(),&QHeaderView::sectionClicked,this,&SearchWindow::recvSortTableInfo);
+
     //文件菜单
     QObject::connect(this->ui->action_file_window_new,&QAction::triggered,[&](){
         QProcess newWind;
@@ -162,7 +164,7 @@ void SearchWindow::searchReset(const QString& target, bool bAsk)
         }
     }
     //重置表数据
-    showProperty(true);
+    showProperty(false==this->ui->tableWidget->isColumnHidden(SearchConst::Col::Idx::LINE));
 
     bool targetValid = checkTargets(target,false);
 
@@ -415,9 +417,18 @@ void SearchWindow::showProperty(bool searchContent)
     this->ui->tableWidget->clearContents();
     //设置表头
     QStringList headers;
-    headers << SearchConst::Col::Head::INDEX << SearchConst::Col::Head::TYPE << (searchContent ? SearchConst::Col::Head::LINE : SearchConst::Col::Head::SIZE) << SearchConst::Col::Head::PATH;
+    headers << SearchConst::Col::Head::INDEX
+            << SearchConst::Col::Head::TYPE
+            << SearchConst::Col::Head::SIZE
+            << SearchConst::Col::Head::SIZE
+            << SearchConst::Col::Head::LINE
+            << SearchConst::Col::Head::PATH;
     this->ui->tableWidget->setColumnCount(headers.size());
     this->ui->tableWidget->setHorizontalHeaderLabels(headers);
+    //隐藏表头
+    this->ui->tableWidget->setColumnHidden(SearchConst::Col::Idx::SIZE_byte,true);
+    this->ui->tableWidget->setColumnHidden(SearchConst::Col::Idx::LINE,false==searchContent);
+
     //最后一列不留空
     this->ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
     //默认均分列宽
@@ -462,30 +473,37 @@ void SearchWindow::showResult(const SearchImpl::CResultVec &resultVec, bool sear
         const SearchImpl::CResult& searchResult = resultVec.at(row);
         this->ui->tableWidget->insertRow(row);
         //序号
-        temp = QString::number(row+1);
-        strItem = new QTableWidgetItem(temp);
-        strItem->setToolTip(temp);
+        strItem = new QTableWidgetItem();
+        //设置显示为数字，方便排序
+        strItem->setData(Qt::DisplayRole,row+1);
+        strItem->setToolTip(QString::number(row+1));
         this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::INDEX,strItem);
+
         //类型
         temp = SearchImpl::CFileType::Name(searchResult.fileInfo);
         strItem = new QTableWidgetItem(temp);
         strItem->setToolTip(temp);
         this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::TYPE,strItem);
 
-        if(searchContent)
-        {
-            //所在行
-            temp = SearchImpl::CResult::ToString(searchResult.lineInfo,SearchConst::multi_split);
-            strItem = new QTableWidgetItem(temp);
-            strItem->setToolTip(temp);
-            this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::LINE,strItem);
-        } else {
-            //大小
-            temp = SearchWindow::FileSize(searchResult.fileInfo.size());
-            strItem = new QTableWidgetItem(temp);
-            strItem->setToolTip(QString::number(searchResult.fileInfo.size())+"字节");
-            this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::SIZE,strItem);
-        }
+        //大小
+        temp = SearchWindow::FileSize(searchResult.fileInfo.size());
+        strItem = new QTableWidgetItem(temp);
+        temp = QString::number(searchResult.fileInfo.size())+"字节";
+        strItem->setToolTip(temp);
+        this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::SIZE_human,strItem);
+
+        //大小
+        strItem = new QTableWidgetItem();
+        strItem->setData(Qt::DisplayRole,searchResult.fileInfo.size());
+        strItem->setToolTip(temp);
+        this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::SIZE_byte,strItem);
+
+        //所在行
+        temp = searchContent ? SearchImpl::CResult::ToString(searchResult.lineInfo,SearchConst::multi_split):"";
+        strItem = new QTableWidgetItem(temp);
+        strItem->setToolTip(temp);
+        this->ui->tableWidget->setItem(row,SearchConst::Col::Idx::LINE,strItem);
+
         //路径
         temp = searchResult.fileInfo.filePath();
         strItem = new QTableWidgetItem(temp);
@@ -543,23 +561,28 @@ void SearchWindow::recvBtnSearchExport()
         MSG_BOX_warn(QString("写导出文件失败："+exportPath));
         return;
     }
-    QString temp = this->ui->tableWidget->horizontalHeaderItem(SearchConst::Col::Idx::SIZE)->text();
-    bool searchContent = (SearchConst::Col::Head::LINE==temp);
+
+    bool searchContent = (false ==this->ui->tableWidget->isColumnHidden(SearchConst::Col::Idx::LINE));
     QTextStream textStream(&exportFile);
     textStream.setCodec("GB2312");
     textStream << "\"" << SearchConst::Col::Head::INDEX << "\",";
     textStream << "\"" << SearchConst::Col::Head::TYPE << "\",";
-    textStream << "\"" << (searchContent ? SearchConst::Col::Head::LINE : SearchConst::Col::Head::SIZE) << "\",";
+    textStream << "\"" << SearchConst::Col::Head::SIZE << "\",";
+    if(searchContent)
+    {
+        textStream << "\"" << SearchConst::Col::Head::LINE << "\",";
+    }
     textStream << "\"" << SearchConst::Col::Head::PATH << "\"\n";
 
     for(int row=0;row <this->ui->tableWidget->rowCount();++row)
     {
         textStream << "\"" << this->ui->tableWidget->item(row,SearchConst::Col::Idx::INDEX)->text() << "\",";
         textStream << "\"" << this->ui->tableWidget->item(row,SearchConst::Col::Idx::TYPE)->text() << "\",";
-        temp = this->ui->tableWidget->item(row,SearchConst::Col::Idx::PATH)->text();
-        temp = searchContent ? this->ui->tableWidget->item(row,SearchConst::Col::Idx::LINE)->text()
-                             : this->ui->tableWidget->item(row,SearchConst::Col::Idx::SIZE)->text() ;
-        textStream << "\"" << temp << "\",";
+        textStream << "\"" << this->ui->tableWidget->item(row,SearchConst::Col::Idx::SIZE_human)->text() << "\",";
+        if(searchContent)
+        {
+            textStream << "\"" << this->ui->tableWidget->item(row,SearchConst::Col::Idx::LINE)->text() << "\",";
+        }
         textStream << "\"" << this->ui->tableWidget->item(row,SearchConst::Col::Idx::PATH)->text() << "\"\n";
     }
     exportFile.close();
@@ -656,4 +679,35 @@ bool SearchWindow::RrecycleFile(const QString&filePath)
     shDelFile.fFlags |= FOF_ALLOWUNDO;     //删除到回收站
     if( 0!=SHFileOperation(&shDelFile)) return false; //执行删除
     return !shDelFile.fAnyOperationsAborted;
+}
+
+
+void SearchWindow::recvSortTableInfo(int colIndex)
+{
+    if(SearchConst::Col::Idx::INDEX == colIndex)
+    {
+        //The items are sorted ascending e.g. starts with 'AAA' ends with 'ZZZ' in Latin-1 locales
+        static Qt::SortOrder lastSort = Qt::AscendingOrder;
+        this->ui->tableWidget->sortByColumn(colIndex,lastSort);
+        //升降排序奇偶次数交互
+        lastSort = (Qt::AscendingOrder==lastSort) ? Qt::DescendingOrder : Qt::AscendingOrder;
+        return;
+    }
+    if(SearchConst::Col::Idx::PATH == colIndex)
+    {
+        //The items are sorted ascending e.g. starts with 'AAA' ends with 'ZZZ' in Latin-1 locales
+        static Qt::SortOrder lastSort = Qt::AscendingOrder;
+        this->ui->tableWidget->sortByColumn(colIndex,lastSort);
+        //升降排序奇偶次数交互
+        lastSort = (Qt::AscendingOrder==lastSort) ? Qt::DescendingOrder : Qt::AscendingOrder;
+    }
+    if(SearchConst::Col::Idx::SIZE_human == colIndex)
+    {
+        //The items are sorted ascending e.g. starts with 'AAA' ends with 'ZZZ' in Latin-1 locales
+        static Qt::SortOrder lastSort = Qt::AscendingOrder;
+        this->ui->tableWidget->sortByColumn(SearchConst::Col::Idx::SIZE_byte,lastSort);
+        //升降排序奇偶次数交互
+        lastSort = (Qt::AscendingOrder==lastSort) ? Qt::DescendingOrder : Qt::AscendingOrder;
+    }
+    return;
 }

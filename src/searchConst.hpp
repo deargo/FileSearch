@@ -11,9 +11,10 @@ namespace Col {
 namespace Idx {
 static const int INDEX=0;
 static const int TYPE=1;
-static const int SIZE=2;
-static const int LINE=2;
-static const int PATH=3;
+static const int SIZE_byte=2;
+static const int SIZE_human=3;
+static const int LINE=4;
+static const int PATH=5;
 }
 namespace Head {
 static const QString INDEX="序号";

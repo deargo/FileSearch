@@ -39,6 +39,7 @@ public slots:
     void recvBtnSearchBegin();
     void recvBtnSearchExport();
     void recvBtnSearchDelete();
+    void recvSortTableInfo(int colIndex);
 
 private:
     void initSignal();

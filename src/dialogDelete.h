@@ -22,6 +22,8 @@ public:
     explicit DialogDelete(const QList<int>& selectRows,
                           const QTableWidget* tableWidget, QWidget *parent = 0);
     ~DialogDelete();
+public slots:
+    void recvSortTableInfo(int colIndex);
 
 private:
     Ui::DialogDelete *ui;
@@ -31,6 +33,7 @@ public:
     Choise getChoise(){ return choise;}
 
 private:
+    enum class Col{INDEX=0,PATH=1};
     Choise choise = Choise::canceled;
     void initTable(const QList<int> &selectRows, const QTableWidget* tableWidget);
 };
