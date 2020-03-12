@@ -328,7 +328,6 @@ void SearchImpl::CCondition::clear()
     filename_exclude.clear();
     content_include.clear();
 }
-
 bool SearchImpl::CCondition::matched(const QFileInfo &targetFileInfo, QList<int>& lineList) const
 {
     QString targetDir;
@@ -374,26 +373,27 @@ QString SearchImpl::CFileType::Type(SearchImpl::CFileType::Data data)
 {
     static QMap<SearchImpl::CFileType::Data,QString> fileTypeMap =
     {
-        {SearchImpl::CFileType::Data::UNKNOW,"未知"},
-        {SearchImpl::CFileType::Data::DIR,"目录"},
-        {SearchImpl::CFileType::Data::LINK,"链接"},
-        {SearchImpl::CFileType::Data::TEXT,"文本"},
-        {SearchImpl::CFileType::Data::XML,"XML"},
-        {SearchImpl::CFileType::Data::WORD,"文档"},
-        {SearchImpl::CFileType::Data::IMAGE,"图片"},
-        {SearchImpl::CFileType::Data::AUDIO,"音频"},
-        {SearchImpl::CFileType::Data::VIDEO,"视频"},
-        {SearchImpl::CFileType::Data::BINARY,"二进制"}
+        {SearchImpl::CFileType::Data::UNKNOW,"unknow"},
+        {SearchImpl::CFileType::Data::DIR,"dir"},
+        {SearchImpl::CFileType::Data::LINK,"link"},
+        {SearchImpl::CFileType::Data::TEXT,"text"},
+        {SearchImpl::CFileType::Data::XML,"xml"},
+        {SearchImpl::CFileType::Data::WORD,"word"},
+        {SearchImpl::CFileType::Data::EXCEL,"excel"},
+        {SearchImpl::CFileType::Data::PPT,"ppt"},
+        {SearchImpl::CFileType::Data::VISIO,"visio"},
+        {SearchImpl::CFileType::Data::PDF,"pdf"},
+        {SearchImpl::CFileType::Data::IMAGE,"image"},
+        {SearchImpl::CFileType::Data::AUDIO,"audio"},
+        {SearchImpl::CFileType::Data::VIDEO,"video"},
+        {SearchImpl::CFileType::Data::LIBRARY,"library"},
+        {SearchImpl::CFileType::Data::BINARY,"binary"}
     };
-    return fileTypeMap.contains(data) ? fileTypeMap.value(data): "未知";
+    return fileTypeMap.contains(data) ? fileTypeMap.value(data): "unknow";
 }
 SearchImpl::CFileType::Data SearchImpl::CFileType::Type(const QFileInfo& fileInfo)
 {
-    if(fileInfo.absoluteFilePath()=="D:/myProj/FileSearch/build/ui_dialogDelete.h")
-    {
-        int aa;
-        aa=1;
-    }
+    QString fileName = fileInfo.fileName();
     if(fileInfo.isDir()) return SearchImpl::CFileType::Data::DIR;
     if(fileInfo.isSymLink()) return SearchImpl::CFileType::Data::LINK;
     QString mime = SearchImpl::CFileType::Mime(fileInfo);
@@ -413,18 +413,30 @@ SearchImpl::CFileType::Data SearchImpl::CFileType::Type(const QFileInfo& fileInf
     if(mime.startsWith("application/atom+xml")) return SearchImpl::CFileType::Data::XML;
     if(mime.startsWith("application/json")) return SearchImpl::CFileType::Data::TEXT;
     if(mime.startsWith("application/msword")) return SearchImpl::CFileType::Data::WORD;
-    if(mime.startsWith("application/pdf")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/pdf")) return SearchImpl::CFileType::Data::PDF;
     if(mime.startsWith("application/x-jpg")) return SearchImpl::CFileType::Data::IMAGE;
     if(mime.startsWith("application/x-jpeg")) return SearchImpl::CFileType::Data::IMAGE;
     if(mime.startsWith("application/x-img")) return SearchImpl::CFileType::Data::IMAGE;
     if(mime.startsWith("application/x-png")) return SearchImpl::CFileType::Data::IMAGE;
-    if(mime.startsWith("application/x-ppt")) return SearchImpl::CFileType::Data::WORD;
-    if(mime.startsWith("application/x-vnd.msg-powerpoint")) return SearchImpl::CFileType::Data::WORD;
-    if(mime.startsWith("application/x-vnd.msg-excel")) return SearchImpl::CFileType::Data::WORD;
-    if(mime.startsWith("application/x-xls")) return SearchImpl::CFileType::Data::WORD;
-    if(mime.startsWith("application/x-vnd.visio")) return SearchImpl::CFileType::Data::WORD;
-    if(mime.startsWith("application/x-vsd")) return SearchImpl::CFileType::Data::WORD;
-    if(mime.startsWith("application/x-visio")) return SearchImpl::CFileType::Data::WORD;
+    if(mime.startsWith("application/x-ppt")) return SearchImpl::CFileType::Data::PPT;
+    if(mime.startsWith("application/x-vnd.msg-powerpoint")) return SearchImpl::CFileType::Data::PPT;
+    if(mime.startsWith("application/x-vnd.msg-excel")) return SearchImpl::CFileType::Data::EXCEL;
+    if(mime.startsWith("application/x-xls")) return SearchImpl::CFileType::Data::EXCEL;
+    if(mime.startsWith("application/x-vnd.visio")) return SearchImpl::CFileType::Data::VISIO;
+    if(mime.startsWith("application/x-vsd")) return SearchImpl::CFileType::Data::VISIO;
+    if(mime.startsWith("application/x-visio")) return SearchImpl::CFileType::Data::VISIO;
+    if(mime.startsWith("application/x-archive")) return SearchImpl::CFileType::Data::LIBRARY;
+    if(mime.startsWith("application/x-7z-compressed")) return SearchImpl::CFileType::Data::LIBRARY;
+    if(mime.startsWith("application/zip")) return SearchImpl::CFileType::Data::LIBRARY;
+    if(mime.startsWith("application/x-compressed-tar")) return SearchImpl::CFileType::Data::LIBRARY;
+    if(mime.startsWith("application/x-ms-dos-executable"))
+    {
+        if(fileName.endsWith(".dll") || fileName.endsWith(".so"))
+        {
+            return SearchImpl::CFileType::Data::LIBRARY;
+        }
+        return SearchImpl::CFileType::Data::BINARY;
+    }
     if(fileInfo.isExecutable()) return SearchImpl::CFileType::Data::BINARY;
     return SearchImpl::CFileType::Data::UNKNOW;
 }

@@ -489,10 +489,9 @@ void SearchWindow::showResult(const SearchImpl::CResultVec &resultVec, bool sear
     this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     QString temp;
     QTableWidgetItem *strItem = nullptr;
-    int rows = resultVec.size();
-    for(int row =0; row< rows;++row)
+    for(int row =0; row< resultVec.size();++row)
     {
-        int ratio = row*1.0/rows*100;
+        int ratio = row*1.0/resultVec.size()*100;
         if(ratio%5 ==0)
         {
             emit sendWaitMessage(QString::asprintf("正在展示 %%%02d ...",ratio));

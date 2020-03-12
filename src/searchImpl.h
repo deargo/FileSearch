@@ -131,7 +131,7 @@ public:
     class CFileType
     {
     public:
-        enum class Data {UNKNOW=0,DIR,LINK,TEXT,XML,WORD,IMAGE,AUDIO,VIDEO,BINARY};
+        enum class Data {UNKNOW=0,DIR,LINK,TEXT,XML,WORD,EXCEL,PPT,VISIO,PDF,IMAGE,AUDIO,VIDEO,LIBRARY,BINARY};
         static QString Name(Data data) {return CFileType::Type(data); }
         static QString Name(const QString& filePath){ return CFileType::Name(CFileType::Type(std::move(QFileInfo(filePath))));}
         static QString Name(const QFileInfo& fileInfo){ return CFileType::Name(CFileType::Type(fileInfo));}
