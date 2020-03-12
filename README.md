@@ -20,5 +20,5 @@
 
 # 其他信息
 　　**博客地址：** [https://blog.csdn.net/aguoxin/article/details/104805283](https://blog.csdn.net/aguoxin/article/details/104805283)  
-　　**工具地址：** [FileSearch.zip](//download.csdn.net/download/aguoxin/12243841)   
+　　**工具地址：** [FileSearch.zip](https://download.csdn.net/download/aguoxin/12243841)   
 　　**信息反馈：** 若有bug、或者新的需求，请于博客留言或私信，定会及时回复和处理，谢谢大家，一起进步。  
