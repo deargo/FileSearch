@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = FileSearch
 TEMPLATE = app
+# 生成目录
 DESTDIR  = ../bin
 
 # The following define makes your compiler emit warnings if you use
@@ -47,5 +48,8 @@ CONFIG(debug, debug|release): BUILD_OUT_DIR="$$OUT_PWD/debug"
 CONFIG(release, debug|release):BUILD_OUT_DIR+="$$OUT_PWD/release"
 message(BUILD_OUT_DIR: $$BUILD_OUT_DIR)
 
-QMAKE_POST_LINK += xcopy /Y /C "\"$$PWD/../img"\" "\"$$OUT_PWD/../bin/img\\"\"
+# 编译后拷贝
+QMAKE_POST_LINK += xcopy /Y /C "\"$$PWD/img"\" "\"$$PWD/bin/img\\"\"
 
+# 给exe文件添加图标
+RC_ICONS = img/icon.ico

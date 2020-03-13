@@ -21,7 +21,8 @@ SearchWindow::SearchWindow(QWidget *parent) :
     ui(new Ui::SearchWindow)
 {
     ui->setupUi(this);
-    this->setWindowIcon(QIcon(QApplication::applicationDirPath()+"/img/icon.png"));
+    //设置标题栏图标、任务栏图标、任务栏悬浮窗口标题栏图标
+    this->setWindowIcon(QIcon(QApplication::applicationDirPath()+"img/icon.png"));
     this->setWindowTitle("文件搜索工具");
 
     //禁止缩放
