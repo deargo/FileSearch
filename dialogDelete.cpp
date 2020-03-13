@@ -9,6 +9,10 @@ DialogDelete::DialogDelete(const QList<int> &selectRows, const QTableWidget *tab
     ui(new Ui::DialogDelete)
 {
     ui->setupUi(this);
+    //设置最小窗口
+    this->setMinimumSize(this->width(),this->height());
+    //只显示关闭按钮
+    this->setWindowFlags(Qt::Dialog|Qt::WindowCloseButtonHint);
 
     initTable(selectRows,tableWidget);
     //关联相关选项

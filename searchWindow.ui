@@ -6,379 +6,290 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>821</width>
-    <height>546</height>
+    <width>820</width>
+    <height>600</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>820</width>
+    <height>600</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>SearchWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="pushButton_search_reset">
-    <property name="geometry">
-     <rect>
-      <x>689</x>
-      <y>24</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>重置</string>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="tableWidget">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>111</y>
-      <width>821</width>
-      <height>411</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_search_browse_dir">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>3</y>
-      <width>61</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>选择目录</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_search_target">
-    <property name="geometry">
-     <rect>
-      <x>118</x>
-      <y>4</y>
-      <width>501</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_search_dir_include">
-    <property name="geometry">
-     <rect>
-      <x>118</x>
-      <y>23</y>
-      <width>231</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_search_begin">
-    <property name="geometry">
-     <rect>
-      <x>689</x>
-      <y>53</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>搜索</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_search_dir_exclude">
-    <property name="geometry">
-     <rect>
-      <x>418</x>
-      <y>24</y>
-      <width>201</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_filename_include">
-    <property name="geometry">
-     <rect>
-      <x>118</x>
-      <y>66</y>
-      <width>301</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_filename_include_casesensitive">
-    <property name="geometry">
-     <rect>
-      <x>422</x>
-      <y>67</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>区分大小写</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_filename_include_whole_word">
-    <property name="geometry">
-     <rect>
-      <x>512</x>
-      <y>67</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>全字匹配</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_content_include_casesensitive">
-    <property name="geometry">
-     <rect>
-      <x>422</x>
-      <y>89</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>区分大小写</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_content_include_whole_word">
-    <property name="geometry">
-     <rect>
-      <x>512</x>
-      <y>89</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>全字匹配</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_content_include_regex">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>89</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>正则表达式</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_filename_include_regex">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>67</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>正则表达式</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_filename_exclude_casesensitive">
-    <property name="geometry">
-     <rect>
-      <x>422</x>
-      <y>46</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>区分大小写</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_filename_exclude_regex">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>46</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>正则表达式</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_filename_exclude">
-    <property name="geometry">
-     <rect>
-      <x>118</x>
-      <y>45</y>
-      <width>301</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_filename_exclude_whole_word">
-    <property name="geometry">
-     <rect>
-      <x>512</x>
-      <y>46</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>全字匹配</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_content_include">
-    <property name="geometry">
-     <rect>
-      <x>118</x>
-      <y>87</y>
-      <width>301</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_search_target">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>5</y>
-      <width>51</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>搜索目标</string>
-    </property>
-    <property name="wordWrap">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_search_browse_file">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>24</y>
-      <width>61</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>选择文件</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_export">
-    <property name="geometry">
-     <rect>
-      <x>784</x>
-      <y>87</y>
-      <width>35</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
-    </property>
-    <property name="text">
-     <string>导出</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_search_dir_include">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>27</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>包含目录</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelsearch_dir_exclude">
-    <property name="geometry">
-     <rect>
-      <x>369</x>
-      <y>26</y>
-      <width>51</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>排除目录</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_filename_exclude">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>50</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>排除文件</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_filename_include">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>70</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>包含文件</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_content_include">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>90</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>包含内容</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_delete">
-    <property name="geometry">
-     <rect>
-      <x>746</x>
-      <y>87</y>
-      <width>35</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>删除</string>
-    </property>
-   </widget>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_search_dir_include">
+      <property name="text">
+       <string>包含目录</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="6">
+     <widget class="QCheckBox" name="checkBox_dir_exclude_regex">
+      <property name="text">
+       <string>正则表达式</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="lineEdit_filename_include">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="lineEdit_filename_exclude">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2" colspan="2">
+     <widget class="QCheckBox" name="checkBox_filename_exclude_casesensitive">
+      <property name="text">
+       <string>区分大小写</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2" colspan="2">
+     <widget class="QCheckBox" name="checkBox_content_include_casesensitive">
+      <property name="text">
+       <string>区分大小写</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="lineEdit_content_include">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="4" colspan="2">
+     <widget class="QCheckBox" name="checkBox_filename_exclude_whole_word">
+      <property name="text">
+       <string>全字匹配</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="7">
+     <widget class="QPushButton" name="pushButton_delete">
+      <property name="text">
+       <string>删除</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="4" colspan="2">
+     <widget class="QCheckBox" name="checkBox_content_include_whole_word">
+      <property name="text">
+       <string>全字匹配</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4" colspan="2">
+     <widget class="QCheckBox" name="checkBox_dir_include_whole_word">
+      <property name="text">
+       <string>全字匹配</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="7" colspan="2">
+     <widget class="QPushButton" name="pushButton_search_begin">
+      <property name="text">
+       <string>搜索</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2" colspan="2">
+     <widget class="QCheckBox" name="checkBox_filename_include_casesensitive">
+      <property name="text">
+       <string>区分大小写</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="6">
+     <widget class="QCheckBox" name="checkBox_dir_include_regex">
+      <property name="text">
+       <string>正则表达式</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="4" colspan="2">
+     <widget class="QCheckBox" name="checkBox_filename_include_whole_word">
+      <property name="text">
+       <string>全字匹配</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2" colspan="2">
+     <widget class="QCheckBox" name="checkBox_dir_include_casesensitive">
+      <property name="text">
+       <string>区分大小写</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2" colspan="2">
+     <widget class="QCheckBox" name="checkBox_dir_exclude_casesensitive">
+      <property name="text">
+       <string>区分大小写</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_content_include">
+      <property name="text">
+       <string>包含内容</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="6">
+     <widget class="QCheckBox" name="checkBox_filename_exclude_regex">
+      <property name="text">
+       <string>正则表达式</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="lineEdit_search_dir_include">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="6">
+     <widget class="QCheckBox" name="checkBox_content_include_regex">
+      <property name="text">
+       <string>正则表达式</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_search_target">
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>搜索目标</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="6">
+     <widget class="QCheckBox" name="checkBox_filename_include_regex">
+      <property name="text">
+       <string>正则表达式</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_filename_include">
+      <property name="text">
+       <string>包含文件</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_filename_exclude">
+      <property name="text">
+       <string>排除文件</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4" colspan="2">
+     <widget class="QCheckBox" name="checkBox_dir_exclude_whole_word">
+      <property name="text">
+       <string>全字匹配</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="8">
+     <widget class="QPushButton" name="pushButton_export">
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
+      </property>
+      <property name="text">
+       <string>导出</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="9">
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="labelsearch_dir_exclude">
+      <property name="text">
+       <string>排除目录</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="lineEdit_search_dir_exclude">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="7" colspan="2">
+     <widget class="QPushButton" name="pushButton_search_reset">
+      <property name="text">
+       <string>重置</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="7" colspan="2">
+     <widget class="QPushButton" name="pushButton_search_browse_dir">
+      <property name="text">
+       <string>选择目录</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="7" colspan="2">
+     <widget class="QPushButton" name="pushButton_search_browse_file">
+      <property name="text">
+       <string>选择文件</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="6">
+     <widget class="QLineEdit" name="lineEdit_search_target"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>821</width>
+     <width>820</width>
      <height>22</height>
     </rect>
    </property>

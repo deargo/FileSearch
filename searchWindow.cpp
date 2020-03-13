@@ -25,10 +25,16 @@ SearchWindow::SearchWindow(QWidget *parent) :
     this->setWindowIcon(QIcon(QApplication::applicationDirPath()+"img/icon.png"));
     this->setWindowTitle("文件搜索工具");
 
-    //禁止缩放
-    this->setFixedSize(this->width(),this->height());
     //监控enter按钮事件
     this->ui->lineEdit_search_target->installEventFilter(this);
+
+    //目标条件只支持全词匹配
+    this->ui->checkBox_dir_include_casesensitive->setHidden(true);
+    this->ui->checkBox_dir_include_whole_word->setHidden(true);
+    this->ui->checkBox_dir_include_regex->setHidden(true);
+    this->ui->checkBox_dir_exclude_casesensitive->setHidden(true);
+    this->ui->checkBox_dir_exclude_whole_word->setHidden(true);
+    this->ui->checkBox_dir_exclude_regex->setHidden(true);
 
     pDialogWait = new DialogWait("img/loading.gif",this);
 
@@ -488,6 +494,8 @@ void SearchWindow::showResult(const SearchImpl::CResultVec &resultVec, bool sear
     }
     //有数据则可拉动各列宽度
     this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(SearchConst::Col::Idx::INDEX, QHeaderView::ResizeToContents);
+    this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(SearchConst::Col::Idx::TYPE, QHeaderView::ResizeToContents);
     QString temp;
     QTableWidgetItem *strItem = nullptr;
     for(int row =0; row< resultVec.size();++row)

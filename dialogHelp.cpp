@@ -26,7 +26,7 @@ DialogHelp::DialogHelp(QWidget *parent, Type type) :
     //设置最小和最大窗口
     QRect rect = parent->geometry();
     this->setMinimumSize(this->width(),this->height());
-    this->setMaximumSize(rect.width(),rect.height());
+    this->setMaximumSize(rect.width()-20,rect.height()-20);
 
     //设置窗体只有关闭按钮
     Qt::WindowFlags windowFlag  = Qt::Dialog;

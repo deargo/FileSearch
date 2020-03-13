@@ -23,7 +23,7 @@ echo #==================================================================
 %dir_clear%\windeployqt.exe FileSearch.exe
 echo #==================================================================
 echo ´ò°ü½áÊø¡£
-ls -ltr
+dir
 :package_ended
 
 :bat_ended
